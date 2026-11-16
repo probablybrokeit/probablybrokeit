@@ -1,7 +1,7 @@
 import type { Board } from "./types";
 
 // Local-first storage. Swap these functions for API calls when a backend is added.
-const KEY = "postmortem-boards-v1";
+const KEY = "postmortem-boards-v2";
 const CHANGE_EVENT = "postmortem-storage-change";
 
 export function readRaw(): string {
