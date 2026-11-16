@@ -24,6 +24,7 @@ export function boardBodyHtml(b: Board): string {
 
   out.push("<h2>Details</h2>");
   const rows: [string, string][] = [
+    ...(b.incidentId ? [["Incident ID", b.incidentId] as [string, string]] : []),
     ["Severity", b.severity],
     ["Status", b.status],
     ["Owner", b.owner || "—"],

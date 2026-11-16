@@ -7,6 +7,7 @@ export function boardToMarkdown(b: Board): string {
   const lines: string[] = [];
 
   lines.push(`# Postmortem: ${b.title}`, "");
+  if (b.incidentId) lines.push(`- **Incident ID:** ${b.incidentId}`);
   lines.push(`- **Severity:** ${b.severity}`);
   lines.push(`- **Status:** ${b.status}`);
   lines.push(`- **Owner:** ${b.owner || "—"}`);
