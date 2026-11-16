@@ -6,6 +6,7 @@ export function newBoard(title: string, severity: Severity, incidentStart: strin
   return {
     id: newId(),
     title,
+    incidentId: "",
     severity,
     status: "draft",
     owner: "",

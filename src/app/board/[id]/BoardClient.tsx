@@ -107,6 +107,9 @@ export function BoardClient({ id }: { id: string }) {
       <fieldset disabled={locked} className="min-w-0 space-y-8">
         {/* Metadata and metrics */}
         <section className="grid gap-4 md:grid-cols-4">
+          <label className={label}>Incident ID (optional)
+            <input className={input} value={board.incidentId ?? ""} placeholder="e.g. INC-1234" onChange={(e) => set("incidentId", e.target.value)} />
+          </label>
           <label className={label}>Owner (one accountable person)
             <input className={input} value={board.owner} onChange={(e) => set("owner", e.target.value)} />
           </label>

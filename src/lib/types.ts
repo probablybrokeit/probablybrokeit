@@ -57,6 +57,8 @@ export type ActionItem = {
 export type Board = {
   id: string;
   title: string;
+  /** Optional ID from your incident tracker, e.g. INC-1234. */
+  incidentId?: string;
   severity: Severity;
   status: Status;
   owner: string;
