@@ -1,5 +1,11 @@
 ## Hi there 👋
 
+I'm probablybrokeit. This is my personal GitHub profile.
+
+## Current focus
+
+- 🔭 Personal projects, kept separate from work
+
 <!--
 **probablybrokeit/probablybrokeit** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
