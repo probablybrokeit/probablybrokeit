@@ -83,11 +83,6 @@ export function boardBodyHtml(b: Board): string {
   return out.join("\n");
 }
 
-/** Confluence storage-format file. Paste via Insert > Markup, or upload through the API later. */
-export function boardStorageHtml(b: Board): string {
-  return boardBodyHtml(b);
-}
-
 /** Standalone, printable HTML report. Open in a browser and print to PDF. */
 export function boardReportHtml(b: Board): string {
   return `<!doctype html>

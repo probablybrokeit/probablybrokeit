@@ -4,7 +4,6 @@ import type { Board } from "./types";
 export function publishProblems(b: Board): string[] {
   const p: string[] = [];
   if (!b.owner.trim()) p.push("Set an owner: one person accountable for the postmortem.");
-  if (!b.audience.trim()) p.push("Set the audience: who should read this.");
   if (!b.incidentStart) p.push("Set when the incident started.");
   if (!b.detectedAt) p.push("Set when the incident was detected.");
   if (!b.mitigatedAt) p.push("Set when impact was mitigated.");
@@ -20,7 +19,6 @@ export function publishProblems(b: Board): string[] {
 
   if (b.factors.length === 0) p.push("Add at least one contributing factor.");
   b.factors.forEach((f, i) => {
-    if (!f.category) p.push(`Contributing factor ${i + 1}: pick a category.`);
     if (!f.text.trim()) p.push(`Contributing factor ${i + 1}: describe it.`);
   });
 
@@ -31,7 +29,7 @@ export function publishProblems(b: Board): string[] {
     if (!a.type) p.push(`${n}: pick a type (prevent, mitigate, detect, repair, investigate).`);
     if (!a.priority) p.push(`${n}: pick a priority.`);
     if (!a.owner.trim()) p.push(`${n}: set an owner.`);
-    if (!/^https?:\/\//.test(a.trackingLink)) p.push(`${n}: add a tracking link starting with https://.`);
+    if (!a.trackingLink.trim()) p.push(`${n}: add a ticket link or ID.`);
     if (!a.endState.trim()) p.push(`${n}: write a measurable end state.`);
   });
 

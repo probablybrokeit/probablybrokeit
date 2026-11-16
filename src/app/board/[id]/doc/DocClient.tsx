@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { boardBodyHtml, copyForConfluence } from "@/lib/export";
+import { boardBodyHtml, boardReportHtml, copyForConfluence, download } from "@/lib/export";
 import { boardToMarkdown } from "@/lib/markdown";
 import { useBoard } from "@/lib/useBoard";
 
@@ -46,6 +46,7 @@ export function DocClient({ id }: { id: string }) {
           <button onClick={() => copy("rich")} className={button} title="Keeps formatting. Paste into Confluence, Google Docs or Word.">Copy rich text</button>
           <button onClick={() => copy("html")} className={button} title="Raw HTML source.">Copy HTML</button>
           <button onClick={() => copy("markdown")} className={button}>Copy Markdown</button>
+          <button onClick={() => download(`${slugify(board.title) || board.id}.html`, "text/html", boardReportHtml(board))} className={button} title="Standalone file. Open in a browser or print to PDF.">Download HTML</button>
           {status && <span className="text-sm text-emerald-700 dark:text-emerald-400">{status}</span>}
         </div>
       </div>
@@ -57,6 +58,10 @@ export function DocClient({ id }: { id: string }) {
       </article>
     </div>
   );
+}
+
+function slugify(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 function escapeText(s: string) {
