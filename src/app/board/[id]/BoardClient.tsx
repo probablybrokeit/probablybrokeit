@@ -68,17 +68,18 @@ export function BoardClient({ id }: { id: string }) {
           {board.status === "draft" && (
             <button onClick={() => set("status", "review")} className="rounded border px-3 py-1 text-sm dark:border-zinc-600">Move to review</button>
           )}
+          {board.status !== "published" && (
+            <button
+              onClick={() => set("status", "published")}
+              disabled={problems.length > 0}
+              title={problems.length > 0 ? `Fix ${problems.length} item(s) listed below first` : "Publish this postmortem"}
+              className="rounded bg-emerald-700 px-3 py-1 text-sm text-white disabled:bg-zinc-300 disabled:text-zinc-600 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-400"
+            >
+              {problems.length > 0 ? `Publish (${problems.length} to fix)` : "Publish"}
+            </button>
+          )}
           {board.status === "review" && (
-            <>
-              <button
-                onClick={() => set("status", "published")}
-                disabled={problems.length > 0}
-                className="rounded bg-emerald-700 px-3 py-1 text-sm text-white disabled:bg-zinc-300 disabled:text-zinc-600 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-400"
-              >
-                Publish
-              </button>
-              <button onClick={() => set("status", "draft")} className="rounded border px-3 py-1 text-sm dark:border-zinc-600">Back to draft</button>
-            </>
+            <button onClick={() => set("status", "draft")} className="rounded border px-3 py-1 text-sm dark:border-zinc-600">Back to draft</button>
           )}
           {board.status === "published" && (
             <button onClick={() => set("status", "draft")} className="rounded border px-3 py-1 text-sm dark:border-zinc-600">Reopen as draft</button>
