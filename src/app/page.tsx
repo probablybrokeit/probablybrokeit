@@ -34,6 +34,25 @@ export default function Home() {
     <main className="mx-auto max-w-3xl space-y-8 p-6">
       <h1 className="text-3xl font-bold">Postmortems</h1>
 
+      <section className="space-y-3 text-sm text-zinc-600 dark:text-zinc-300">
+        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">About</h2>
+        <p>A blameless postmortem tool. Describe what happened and what the system allowed, not who did what. Based on the <a href="https://sre.google/workbook/postmortem-culture/" target="_blank" rel="noopener noreferrer" className="underline hover:text-zinc-900 dark:hover:text-zinc-100">Google SRE Workbook, Chapter 10: Postmortem Culture</a>.</p>
+        <ol className="list-inside list-decimal space-y-1">
+          <li>Create a postmortem with a title, severity and incident start time.</li>
+          <li>Fill in the timeline, contributing factors and action items, then move it to review.</li>
+          <li>Publish when every check passes, then open <em>View page and export</em> to copy or download it.</li>
+        </ol>
+        <p className="text-xs text-zinc-500">Postmortems are saved in this browser only. Clearing browser data deletes them.</p>
+        <div>
+          <p className="font-medium text-zinc-900 dark:text-zinc-100">Coming next</p>
+          <ul className="list-inside list-disc text-xs">
+            <li>Shareable links, so teammates can read a published postmortem</li>
+            <li>Shared storage, so boards aren&apos;t limited to one browser</li>
+            <li>An open action item dashboard across all postmortems</li>
+          </ul>
+        </div>
+      </section>
+
       <form onSubmit={create} className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
         <h2 className="font-semibold">New postmortem</h2>
         <input

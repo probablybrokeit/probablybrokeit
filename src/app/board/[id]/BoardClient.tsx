@@ -5,19 +5,15 @@ import { ActionItems } from "@/components/ActionItems";
 import { NoteColumn } from "@/components/NoteColumn";
 import { formatMinutes, metrics } from "@/lib/board";
 import { blamelessWarnings, publishProblems } from "@/lib/checks";
-import { boardToMarkdown } from "@/lib/markdown";
-import { boardReportHtml, boardStorageHtml, copyForConfluence, download } from "@/lib/export";
 import { newId } from "@/lib/storage";
 import { useBoard } from "@/lib/useBoard";
 import { FACTOR_CATEGORIES, NOTE_COLUMNS, SEVERITIES, type Board, type Factor, type Note } from "@/lib/types";
-import { useState } from "react";
 
 const input = "rounded border border-zinc-300 bg-transparent px-2 py-1 text-sm dark:border-zinc-600";
 const label = "flex flex-col gap-1 text-xs font-medium text-zinc-600 dark:text-zinc-300";
 
 export function BoardClient({ id }: { id: string }) {
   const { board, ready, update } = useBoard(id);
-  const [copied, setCopied] = useState(false);
 
   if (!ready) return <p className="p-6 text-sm text-zinc-500">Loading…</p>;
   if (!board) {
@@ -40,35 +36,15 @@ export function BoardClient({ id }: { id: string }) {
   const setNotes = (fn: (notes: Note[]) => Note[]) => update((b) => ({ ...b, notes: fn(b.notes) }));
   const setFactors = (factors: Factor[]) => set("factors", factors);
 
-  const slug = board.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || board.id;
-  const exportButton = "rounded border border-zinc-300 px-3 py-1 text-sm dark:border-zinc-600";
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-4">
-      {/* Top bar: always editable, so status changes and export work when locked */}
+      {/* Top bar: always editable, so status changes still work when locked */}
       <header className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-4">
             <Link href="/" className="text-sm text-zinc-500 underline">All postmortems</Link>
-            <Link href={`/board/${board.id}/doc`} className="text-sm text-zinc-500 underline">View page</Link>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => download(`${slug}.html`, "text/html", boardReportHtml(board))} className={exportButton} title="Standalone report. Open in a browser, or print to PDF.">
-              HTML report
-            </button>
-            <button onClick={() => download(`${slug}-confluence.html`, "text/html", boardStorageHtml(board))} className={exportButton} title="Upload or paste via Insert > Markup in Confluence.">
-              Confluence file
-            </button>
-            <button onClick={() => download(`${slug}.md`, "text/markdown", boardToMarkdown(board))} className={exportButton}>
-              Markdown
-            </button>
-            <button
-              onClick={() => copyForConfluence(board).then(() => setCopied(true), () => setCopied(false)).finally(() => setTimeout(() => setCopied(false), 2000))}
-              className={`${exportButton} ${copied ? "bg-emerald-700 text-white" : ""}`}
-              title="Copies formatted text. Paste into a Confluence page."
-            >
-              {copied ? "Copied" : "Copy for Confluence"}
-            </button>
+            <Link href={`/board/${board.id}/doc`} className="text-sm text-zinc-500 underline">View page and export</Link>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
