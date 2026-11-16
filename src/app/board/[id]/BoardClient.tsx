@@ -48,7 +48,10 @@ export function BoardClient({ id }: { id: string }) {
       {/* Top bar: always editable, so status changes and export work when locked */}
       <header className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href="/" className="text-sm text-zinc-500 underline">All postmortems</Link>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-sm text-zinc-500 underline">All postmortems</Link>
+            <Link href={`/board/${board.id}/doc`} className="text-sm text-zinc-500 underline">View page</Link>
+          </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={() => download(`${slug}.html`, "text/html", boardReportHtml(board))} className={exportButton} title="Standalone report. Open in a browser, or print to PDF.">
               HTML report
