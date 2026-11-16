@@ -36,7 +36,7 @@ export default function Home() {
 
       <section className="space-y-3 text-sm text-zinc-600 dark:text-zinc-300">
         <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">About</h2>
-        <p>A blameless postmortem tool. Describe what happened and what the system allowed, not who did what.</p>
+        <p>A blameless postmortem tool. Describe what happened and what the system allowed, not who did what. Based on the <a href="https://sre.google/workbook/postmortem-culture/" target="_blank" rel="noopener noreferrer" className="underline hover:text-zinc-900 dark:hover:text-zinc-100">Google SRE Workbook, Chapter 10: Postmortem Culture</a>.</p>
         <ol className="list-inside list-decimal space-y-1">
           <li>Create a postmortem with a title, severity and incident start time.</li>
           <li>Fill in the timeline, contributing factors and action items, then move it to review.</li>
