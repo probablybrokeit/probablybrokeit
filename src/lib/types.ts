@@ -46,8 +46,6 @@ export type ActionItem = {
   priority: Priority | "";
   /** A role or team is preferred over a person. */
   owner: string;
-  /** Link to the bug or ticket that tracks this item. */
-  trackingLink: string;
   /** Measurable, verifiable end state. */
   endState: string;
   done: boolean;

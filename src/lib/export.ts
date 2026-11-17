@@ -10,10 +10,6 @@ const multi = (s: string) => esc(s.trim()).split(/\n+/).join("<br />");
 
 const NONE = "<p><em>None</em></p>";
 
-function link(url: string): string {
-  return /^https?:\/\//.test(url) ? `<a href="${esc(url)}">${esc(url)}</a>` : esc(url || "—");
-}
-
 /**
  * Body HTML using only plain tags (h2, p, ul, table, a), which Confluence's
  * storage format accepts. Used for the Confluence file and the clipboard copy.
@@ -68,14 +64,14 @@ export function boardBodyHtml(b: Board): string {
   if (b.actions.length === 0) {
     out.push(NONE);
   } else {
-    const head = ["Done", "Priority", "Type", "Action", "Owner", "End state", "Tracking"]
+    const head = ["Done", "Priority", "Type", "Action", "Owner", "End state"]
       .map((h) => `<th>${h}</th>`)
       .join("");
     const body = b.actions
       .map(
         (a) =>
           `<tr><td>${a.done ? "Yes" : "No"}</td><td>${esc(a.priority || "P?")}</td><td>${esc(a.type || "untyped")}</td>` +
-          `<td>${multi(a.text)}</td><td>${esc(a.owner || "—")}</td><td>${multi(a.endState || "—")}</td><td>${link(a.trackingLink)}</td></tr>`,
+          `<td>${multi(a.text)}</td><td>${esc(a.owner || "—")}</td><td>${multi(a.endState || "—")}</td></tr>`,
       )
       .join("");
     out.push(`<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`);
