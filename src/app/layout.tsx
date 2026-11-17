@@ -15,17 +15,40 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://www.probablybrokeit.com";
+const description = "Probably broke it. Let's learn from it. Blameless incident postmortems.";
+
 export const metadata: Metadata = {
-  title: { default: "probablybrokeit", template: "%s · probablybrokeit" },
-  description: "Probably broke it. Let's learn from it. Blameless incident postmortems.",
+  metadataBase: new URL(siteUrl),
+  title: { default: "Blameless incident postmortems", template: "%s · probablybrokeit" },
+  description,
+  openGraph: {
+    title: "Blameless incident postmortems",
+    description,
+    url: siteUrl,
+    siteName: "probablybrokeit",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Blameless incident postmortems",
+    description,
+  },
 };
+
+// Applies the saved or system theme before the page paints, so there is no flash.
+const themeScript = `(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <Brand />
         <div className="flex-1">{children}</div>
