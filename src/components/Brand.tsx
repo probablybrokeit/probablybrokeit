@@ -9,7 +9,7 @@ export function Brand() {
           <Link href="/" className="font-mono text-lg font-bold leading-tight tracking-tight">
             probablybrokeit
           </Link>
-          <p className="text-xs uppercase tracking-wider text-zinc-500">Blameless incident postmortems</p>
+          <p className="text-xs italic text-zinc-500">Blameless incident postmortems</p>
         </div>
         <div className="flex items-center gap-4">
           <span className="hidden text-sm text-zinc-500 sm:inline">Probably broke it. Let&apos;s learn from it.</span>
