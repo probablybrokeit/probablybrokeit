@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { newBoard } from "@/lib/board";
+import { parseBoard, uniqueTitle } from "@/lib/import";
 import { deleteBoard, saveBoard } from "@/lib/storage";
 import { useBoards } from "@/lib/useBoard";
 import { SEVERITIES, type Severity } from "@/lib/types";
@@ -14,6 +15,7 @@ export default function Home() {
   const [title, setTitle] = useState("");
   const [severity, setSeverity] = useState<Severity>("SEV2");
   const [incidentStart, setIncidentStart] = useState("");
+  const [message, setMessage] = useState("");
 
   function create(e: React.FormEvent) {
     e.preventDefault();
@@ -21,6 +23,33 @@ export default function Home() {
     const board = newBoard(title.trim(), severity, incidentStart);
     saveBoard(board);
     router.push(`/board/${board.id}`);
+  }
+
+  async function importFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    const taken = (boards ?? []).map((b) => b.title);
+    const failed: string[] = [];
+    let imported = 0;
+    for (const file of Array.from(files)) {
+      try {
+        const board = parseBoard(JSON.parse(await file.text()));
+        if (!board) {
+          failed.push(file.name);
+          continue;
+        }
+        board.title = uniqueTitle(board.title, taken);
+        taken.push(board.title);
+        saveBoard(board);
+        imported++;
+      } catch {
+        failed.push(file.name);
+      }
+    }
+    setMessage(
+      failed.length
+        ? `Imported ${imported}. Could not read: ${failed.join(", ")}`
+        : `Imported ${imported} postmortem${imported === 1 ? "" : "s"}.`,
+    );
   }
 
   function remove(id: string) {
@@ -75,6 +104,23 @@ export default function Home() {
           <button type="submit" className="ml-auto rounded bg-zinc-900 px-4 py-1 text-white dark:bg-zinc-100 dark:text-zinc-900">Create</button>
         </div>
       </form>
+
+      <div className="flex flex-wrap items-center gap-3 text-sm">
+        <label className="cursor-pointer rounded border border-zinc-300 px-3 py-1 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800">
+          Import JSON
+          <input
+            type="file"
+            accept="application/json,.json"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              importFiles(e.target.files);
+              e.target.value = "";
+            }}
+          />
+        </label>
+        {message && <span className="text-zinc-600 dark:text-zinc-300">{message}</span>}
+      </div>
 
       <ul className="divide-y divide-zinc-200 dark:divide-zinc-700">
         {sorted?.length === 0 && <li className="py-4 text-sm text-zinc-500">No postmortems yet.</li>}
