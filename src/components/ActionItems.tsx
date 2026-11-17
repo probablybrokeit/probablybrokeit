@@ -33,7 +33,7 @@ export function ActionItems({ items, onChange }: Props) {
             {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
           </select>
           <input className={input} value={i.owner} placeholder="Owner (team or role)" onChange={(e) => patch(i.id, { owner: e.target.value })} />
-          <input className={input} value={i.trackingLink} placeholder="Ticket link or ID" onChange={(e) => patch(i.id, { trackingLink: e.target.value })} />
+          <input className={input} value={i.trackingLink} placeholder="Ticket link or ID (optional)" onChange={(e) => patch(i.id, { trackingLink: e.target.value })} />
           <input className={`${input} md:col-span-4`} value={i.endState} placeholder="Measurable end state, e.g. alert pages within 5 min of error spike" onChange={(e) => patch(i.id, { endState: e.target.value })} />
           <div className="flex items-center justify-between gap-2 md:col-span-2">
             <label className="flex items-center gap-1 text-sm">

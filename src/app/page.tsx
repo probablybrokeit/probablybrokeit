@@ -39,8 +39,8 @@ export default function Home() {
         <p>A blameless postmortem tool. Describe what happened and what the system allowed, not who did what. Based on the <a href="https://sre.google/workbook/postmortem-culture/" target="_blank" rel="noopener noreferrer" className="underline hover:text-zinc-900 dark:hover:text-zinc-100">Google SRE Workbook, Chapter 10: Postmortem Culture</a>.</p>
         <ol className="list-inside list-decimal space-y-1">
           <li>Create a postmortem with a title, severity and incident start time.</li>
-          <li>Fill in the timeline, contributing factors and action items, then move it to review.</li>
-          <li>Publish when every check passes, then open <em>View page and export</em> to copy or download it.</li>
+          <li>Fill in whatever you know. Nothing is required, and tickets can be created later.</li>
+          <li>Publish when you&apos;re ready, then copy or download it from the editor or <em>View page</em>.</li>
         </ol>
         <p className="text-xs text-zinc-500">Postmortems are saved in this browser only. Clearing browser data deletes them.</p>
         <div>

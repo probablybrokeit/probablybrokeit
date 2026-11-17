@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ActionItems } from "@/components/ActionItems";
 import { NoteColumn } from "@/components/NoteColumn";
 import { formatMinutes, metrics } from "@/lib/board";
-import { blamelessWarnings, publishProblems } from "@/lib/checks";
+import { blamelessWarnings } from "@/lib/checks";
 import { boardReportHtml, boardStorageHtml, download } from "@/lib/export";
 import { boardToMarkdown } from "@/lib/markdown";
 import { newId } from "@/lib/storage";
@@ -30,7 +30,6 @@ export function BoardClient({ id }: { id: string }) {
   const slug = board.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || board.id;
   const exportButton = "rounded border border-zinc-300 px-3 py-1 text-sm dark:border-zinc-600";
   const locked = board.status === "published";
-  const problems = publishProblems(board);
   const warnings = blamelessWarnings(board);
   const m = metrics(board);
 
@@ -60,20 +59,7 @@ export function BoardClient({ id }: { id: string }) {
           />
           <span className="rounded-full border border-zinc-300 px-2 py-0.5 text-xs uppercase dark:border-zinc-600">{board.status}</span>
           {board.status === "draft" && (
-            <button onClick={() => set("status", "review")} className="rounded border px-3 py-1 text-sm dark:border-zinc-600">Move to review</button>
-          )}
-          {board.status !== "published" && (
-            <button
-              onClick={() => set("status", "published")}
-              disabled={problems.length > 0}
-              title={problems.length > 0 ? `Fix ${problems.length} item(s) listed below first` : "Publish this postmortem"}
-              className="rounded bg-emerald-700 px-3 py-1 text-sm text-white disabled:bg-zinc-300 disabled:text-zinc-600 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-400"
-            >
-              {problems.length > 0 ? `Publish (${problems.length} to fix)` : "Publish"}
-            </button>
-          )}
-          {board.status === "review" && (
-            <button onClick={() => set("status", "draft")} className="rounded border px-3 py-1 text-sm dark:border-zinc-600">Back to draft</button>
+            <button onClick={() => set("status", "published")} className="rounded bg-emerald-700 px-3 py-1 text-sm text-white">Publish</button>
           )}
           {board.status === "published" && (
             <button onClick={() => set("status", "draft")} className="rounded border px-3 py-1 text-sm dark:border-zinc-600">Reopen as draft</button>
@@ -88,29 +74,17 @@ export function BoardClient({ id }: { id: string }) {
         {locked && <p className="text-sm text-zinc-500">Published postmortems are read-only. Reopen as draft to edit.</p>}
       </header>
 
-      {/* Publish checks and blameless-language suggestions */}
-      {(problems.length > 0 || warnings.length > 0) && (
-        <section className="grid gap-4 md:grid-cols-2">
-          {problems.length > 0 && (
-            <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm dark:border-amber-700 dark:bg-amber-950">
-              <h2 className="mb-2 font-semibold">Before publishing ({problems.length})</h2>
-              <ul className="list-inside list-disc space-y-1">
-                {problems.map((p) => <li key={p}>{p}</li>)}
-              </ul>
-            </div>
-          )}
-          {warnings.length > 0 && (
-            <div className="rounded-lg border border-sky-300 bg-sky-50 p-3 text-sm dark:border-sky-700 dark:bg-sky-950">
-              <h2 className="mb-2 font-semibold">Blameless wording ({warnings.length} suggestions)</h2>
-              <ul className="space-y-2">
-                {warnings.map((w, i) => (
-                  <li key={i}>
-                    <span className="font-mono text-xs">&quot;{w.phrase}&quot;</span> in {w.where.toLowerCase()}: {w.advice}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+      {/* Blameless-language suggestions. Advisory only: nothing is blocked. */}
+      {warnings.length > 0 && (
+        <section className="rounded-lg border border-sky-300 bg-sky-50 p-3 text-sm dark:border-sky-700 dark:bg-sky-950">
+          <h2 className="mb-2 font-semibold">Blameless wording ({warnings.length} suggestions)</h2>
+          <ul className="space-y-2">
+            {warnings.map((w, i) => (
+              <li key={i}>
+                <span className="font-mono text-xs">&quot;{w.phrase}&quot;</span> in {w.where.toLowerCase()}: {w.advice}
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 

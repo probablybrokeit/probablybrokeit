@@ -1,7 +1,7 @@
 export const SEVERITIES = ["SEV1", "SEV2", "SEV3", "SEV4"] as const;
 export type Severity = (typeof SEVERITIES)[number];
 
-export const STATUSES = ["draft", "review", "published"] as const;
+export const STATUSES = ["draft", "published"] as const;
 export type Status = (typeof STATUSES)[number];
 
 // Brainstorm columns (sticky notes).
