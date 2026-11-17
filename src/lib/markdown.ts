@@ -46,7 +46,6 @@ export function boardToMarkdown(b: Board): string {
     lines.push(
       `- [${check}] **${a.priority || "P?"}** (${a.type || "untyped"}) ${a.text}`,
       `  - Owner: ${a.owner || "—"}`,
-      `  - Tracking: ${a.trackingLink || "—"}`,
       `  - End state: ${a.endState || "—"}`,
     );
   }
