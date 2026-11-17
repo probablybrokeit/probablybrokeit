@@ -10,6 +10,11 @@ export function Footer() {
       <a href="https://www.linkedin.com/in/chetan-sharma-9102505b/" target="_blank" rel="noopener noreferrer" className={linkClass}>
         connect
       </a>
+      <span aria-hidden="true">·</span>
+      <span title="App version and commit">
+        v{process.env.NEXT_PUBLIC_APP_VERSION}
+        {process.env.NEXT_PUBLIC_COMMIT ? ` (${process.env.NEXT_PUBLIC_COMMIT})` : ""}
+      </span>
     </footer>
   );
 }
