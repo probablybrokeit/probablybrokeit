@@ -31,25 +31,25 @@ export default function Home() {
     const failed: string[] = [];
     let imported = 0;
     for (const file of Array.from(files)) {
+      let raw: unknown;
       try {
-        const board = parseBoard(JSON.parse(await file.text()));
-        if (!board) {
-          failed.push(file.name);
-          continue;
-        }
-        board.title = uniqueTitle(board.title, taken);
-        taken.push(board.title);
-        saveBoard(board);
-        imported++;
+        raw = JSON.parse(await file.text());
       } catch {
-        failed.push(file.name);
+        failed.push(`${file.name} (not valid JSON)`);
+        continue;
       }
+      const board = parseBoard(raw);
+      if (!board) {
+        failed.push(`${file.name} (not a postmortem export from this app)`);
+        continue;
+      }
+      board.title = uniqueTitle(board.title, taken);
+      taken.push(board.title);
+      saveBoard(board);
+      imported++;
     }
-    setMessage(
-      failed.length
-        ? `Imported ${imported}. Could not read: ${failed.join(", ")}`
-        : `Imported ${imported} postmortem${imported === 1 ? "" : "s"}.`,
-    );
+    const summary = `Imported ${imported} postmortem${imported === 1 ? "" : "s"}.`;
+    setMessage(failed.length ? `${summary} Skipped: ${failed.join("; ")}` : summary);
   }
 
   function remove(id: string) {
@@ -107,7 +107,7 @@ export default function Home() {
 
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <label className="cursor-pointer rounded border border-zinc-300 px-3 py-1 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800">
-          Import JSON
+          Import postmortem
           <input
             type="file"
             accept="application/json,.json"
@@ -119,6 +119,7 @@ export default function Home() {
             }}
           />
         </label>
+        <span className="text-xs text-zinc-500">Accepts .json files exported from this app.</span>
         {message && <span className="text-zinc-600 dark:text-zinc-300">{message}</span>}
       </div>
 
