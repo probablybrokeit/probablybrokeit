@@ -20,3 +20,7 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
+
+---
+
+**Postmortem tool:** [probablybrokeit.com](https://www.probablybrokeit.com/). A blameless postmortem tool based on the Google SRE Workbook, Chapter 10. Source and project notes are in [`docs/postmortem-app.md`](docs/postmortem-app.md).
