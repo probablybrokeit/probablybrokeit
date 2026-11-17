@@ -32,7 +32,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 p-6">
-      <h1 className="text-3xl font-bold">Postmortems</h1>
+      <h1 className="text-3xl font-bold">Blameless incident postmortems</h1>
 
       <section className="space-y-3 text-sm text-zinc-600 dark:text-zinc-300">
         <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">About</h2>

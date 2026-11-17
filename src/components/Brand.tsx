@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Brand() {
   return (
@@ -7,7 +8,10 @@ export function Brand() {
         <Link href="/" className="font-mono text-lg font-bold tracking-tight">
           probablybrokeit
         </Link>
-        <span className="text-sm text-zinc-500">Probably broke it. Let&apos;s learn from it.</span>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-zinc-500">Probably broke it. Let&apos;s learn from it.</span>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
