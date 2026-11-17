@@ -80,6 +80,7 @@ export function BoardClient({ id }: { id: string }) {
           )}
           <div className="ml-auto flex flex-wrap gap-2">
             <button onClick={() => download(`${slug}.md`, "text/markdown", boardToMarkdown(board))} className={exportButton}>Markdown</button>
+            <button onClick={() => download(`${slug}.json`, "application/json", JSON.stringify(board, null, 2))} className={exportButton} title="Full data for backup.">JSON</button>
             <button onClick={() => download(`${slug}.html`, "text/html", boardReportHtml(board))} className={exportButton} title="Standalone file. Open in a browser or print to PDF.">HTML report</button>
             <button onClick={() => download(`${slug}-confluence.html`, "text/html", boardStorageHtml(board))} className={exportButton} title="Paste via Insert > Markup in Confluence.">Confluence file</button>
           </div>
