@@ -8,8 +8,10 @@ updates:
       timezone: "Europe/Stockholm"
     open-pull-requests-limit: 5
     groups:
-      minor-and-patch:
+      # One pull request for all minor and patch npm updates.
+      npm-minor-and-patch:
         update-types: ["minor", "patch"]
+      # Major updates stay as separate pull requests, since they can need code changes.
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -17,3 +19,7 @@ updates:
       interval: "daily"
       time: "02:00"
       timezone: "Europe/Stockholm"
+    groups:
+      # One pull request for all GitHub Actions updates.
+      github-actions:
+        patterns: ["*"]
