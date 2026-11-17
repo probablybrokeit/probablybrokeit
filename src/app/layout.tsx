@@ -36,8 +36,8 @@ export const metadata: Metadata = {
   },
 };
 
-// Applies the saved theme before the page paints. Light is the default, so there is no flash.
-const themeScript = `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark';if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
+// Applies the saved choice, else the browser setting, else light, before the page paints.
+const themeScript = `(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':(!!window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
