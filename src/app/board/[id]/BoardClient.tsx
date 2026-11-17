@@ -50,11 +50,6 @@ export function BoardClient({ id }: { id: string }) {
             <Link href="/" className="text-sm text-zinc-500 underline">All postmortems</Link>
             <Link href={`/board/${board.id}/doc`} className="text-sm text-zinc-500 underline">View page</Link>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => download(`${slug}.md`, "text/markdown", boardToMarkdown(board))} className={exportButton}>Markdown</button>
-            <button onClick={() => download(`${slug}.html`, "text/html", boardReportHtml(board))} className={exportButton} title="Standalone file. Open in a browser or print to PDF.">HTML report</button>
-            <button onClick={() => download(`${slug}-confluence.html`, "text/html", boardStorageHtml(board))} className={exportButton} title="Paste via Insert > Markup in Confluence.">Confluence file</button>
-          </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <input
@@ -83,6 +78,11 @@ export function BoardClient({ id }: { id: string }) {
           {board.status === "published" && (
             <button onClick={() => set("status", "draft")} className="rounded border px-3 py-1 text-sm dark:border-zinc-600">Reopen as draft</button>
           )}
+          <div className="ml-auto flex flex-wrap gap-2">
+            <button onClick={() => download(`${slug}.md`, "text/markdown", boardToMarkdown(board))} className={exportButton}>Markdown</button>
+            <button onClick={() => download(`${slug}.html`, "text/html", boardReportHtml(board))} className={exportButton} title="Standalone file. Open in a browser or print to PDF.">HTML report</button>
+            <button onClick={() => download(`${slug}-confluence.html`, "text/html", boardStorageHtml(board))} className={exportButton} title="Paste via Insert > Markup in Confluence.">Confluence file</button>
+          </div>
         </div>
         {locked && <p className="text-sm text-zinc-500">Published postmortems are read-only. Reopen as draft to edit.</p>}
       </header>
