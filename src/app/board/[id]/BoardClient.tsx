@@ -19,6 +19,7 @@ const label = "flex flex-col gap-1 text-xs font-medium text-zinc-600 dark:text-z
 export function BoardClient({ id }: { id: string }) {
   const { board, ready, update } = useBoard(id);
   const [shareNote, setShareNote] = useState("");
+  const [shareState, setShareState] = useState<"idle" | "copied" | "failed">("idle");
 
   if (!ready) return <p className="p-6 text-sm text-zinc-500">Loading…</p>;
   if (!board) {
@@ -36,12 +37,16 @@ export function BoardClient({ id }: { id: string }) {
     try {
       const url = `${window.location.origin}/share#${await encodeBoard(b)}`;
       await navigator.clipboard.writeText(url);
+      setShareState("copied");
+      setTimeout(() => setShareState("idle"), 2500);
       setShareNote(
         url.length > 6000
           ? "Link copied. It's long, so some chat tools may cut it off."
           : "Link copied. Anyone with it can read this postmortem, and it can't be revoked.",
       );
     } catch {
+      setShareState("failed");
+      setTimeout(() => setShareState("idle"), 2500);
       setShareNote("Could not copy the link. Your browser may block clipboard access.");
     }
   }
@@ -86,7 +91,13 @@ export function BoardClient({ id }: { id: string }) {
             <button onClick={() => download(`${slug}.json`, "application/json", JSON.stringify(board, null, 2))} className={exportButton} title="Full data for backup.">JSON</button>
             <button onClick={() => download(`${slug}.html`, "text/html", boardReportHtml(board))} className={exportButton} title="Standalone file. Open in a browser or print to PDF.">HTML report</button>
             <button onClick={() => download(`${slug}-confluence.html`, "text/html", boardStorageHtml(board))} className={exportButton} title="Paste via Insert > Markup in Confluence.">Confluence file</button>
-            <button onClick={() => copyShareLink(board)} className={exportButton} title="Read-only link. Anyone with it can read the postmortem.">Copy share link</button>
+            <button
+              onClick={() => copyShareLink(board)}
+              className={`${exportButton} ${shareState === "copied" ? "border-emerald-700 bg-emerald-700 text-white" : shareState === "failed" ? "border-red-600 text-red-600" : ""}`}
+              title="Read-only link. Anyone with it can read the postmortem."
+            >
+              {shareState === "copied" ? "Link copied" : shareState === "failed" ? "Copy failed" : "Copy share link"}
+            </button>
           </div>
         </div>
         {shareNote && <p className="text-sm text-zinc-500">{shareNote}</p>}
