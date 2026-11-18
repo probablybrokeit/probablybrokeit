@@ -10,12 +10,15 @@ import { boardToMarkdown } from "@/lib/markdown";
 import { newId } from "@/lib/storage";
 import { useBoard } from "@/lib/useBoard";
 import { FACTOR_CATEGORIES, NOTE_COLUMNS, SEVERITIES, type Board, type Factor, type Note } from "@/lib/types";
+import { encodeBoard } from "@/lib/share";
+import { useState } from "react";
 
 const input = "rounded border border-zinc-300 bg-transparent px-2 py-1 text-sm dark:border-zinc-600";
 const label = "flex flex-col gap-1 text-xs font-medium text-zinc-600 dark:text-zinc-300";
 
 export function BoardClient({ id }: { id: string }) {
   const { board, ready, update } = useBoard(id);
+  const [shareNote, setShareNote] = useState("");
 
   if (!ready) return <p className="p-6 text-sm text-zinc-500">Loading…</p>;
   if (!board) {
@@ -29,6 +32,20 @@ export function BoardClient({ id }: { id: string }) {
 
   const slug = board.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || board.id;
   const exportButton = "rounded border border-zinc-300 px-3 py-1 text-sm dark:border-zinc-600";
+  async function copyShareLink(b: Board) {
+    try {
+      const url = `${window.location.origin}/share#${await encodeBoard(b)}`;
+      await navigator.clipboard.writeText(url);
+      setShareNote(
+        url.length > 6000
+          ? "Link copied. It's long, so some chat tools may cut it off."
+          : "Link copied. Anyone with it can read this postmortem, and it can't be revoked.",
+      );
+    } catch {
+      setShareNote("Could not copy the link. Your browser may block clipboard access.");
+    }
+  }
+
   const locked = board.status === "published";
   const warnings = blamelessWarnings(board);
   const m = metrics(board);
@@ -69,8 +86,10 @@ export function BoardClient({ id }: { id: string }) {
             <button onClick={() => download(`${slug}.json`, "application/json", JSON.stringify(board, null, 2))} className={exportButton} title="Full data for backup.">JSON</button>
             <button onClick={() => download(`${slug}.html`, "text/html", boardReportHtml(board))} className={exportButton} title="Standalone file. Open in a browser or print to PDF.">HTML report</button>
             <button onClick={() => download(`${slug}-confluence.html`, "text/html", boardStorageHtml(board))} className={exportButton} title="Paste via Insert > Markup in Confluence.">Confluence file</button>
+            <button onClick={() => copyShareLink(board)} className={exportButton} title="Read-only link. Anyone with it can read the postmortem.">Copy share link</button>
           </div>
         </div>
+        {shareNote && <p className="text-sm text-zinc-500">{shareNote}</p>}
         {locked && <p className="text-sm text-zinc-500">Published postmortems are read-only. Reopen as draft to edit.</p>}
       </header>
 
