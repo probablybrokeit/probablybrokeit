@@ -70,12 +70,12 @@ export default function Home() {
           <li>Create a postmortem with a title, severity and incident start time.</li>
           <li>Fill in whatever you know. Nothing is required, and tickets can be created later.</li>
           <li>Publish when you&apos;re ready, then copy or download it from the editor or <em>View page</em>.</li>
+          <li>Share a read-only link, or export a file and import it on another computer.</li>
         </ol>
-        <p className="text-xs text-zinc-500">Postmortems are saved in this browser only. Clearing browser data deletes them.</p>
+        <p className="text-xs text-zinc-500">Postmortems are saved in this browser only. Clearing browser data deletes them. A share link can&apos;t be revoked, and a shared copy doesn&apos;t sync back.</p>
         <div>
           <p className="font-medium text-zinc-900 dark:text-zinc-100">Coming next</p>
           <ul className="list-inside list-disc text-xs">
-            <li>Shareable links, so teammates can read a published postmortem</li>
             <li>Shared storage, so boards aren&apos;t limited to one browser</li>
             <li>An open action item dashboard across all postmortems</li>
           </ul>
