@@ -5,8 +5,7 @@ import { ActionItems } from "@/components/ActionItems";
 import { NoteColumn } from "@/components/NoteColumn";
 import { formatMinutes, metrics } from "@/lib/board";
 import { blamelessWarnings } from "@/lib/checks";
-import { boardReportHtml, boardStorageHtml, download } from "@/lib/export";
-import { boardToMarkdown } from "@/lib/markdown";
+import { ExportMenu } from "@/components/ExportMenu";
 import { newId } from "@/lib/storage";
 import { useBoard } from "@/lib/useBoard";
 import { FACTOR_CATEGORIES, NOTE_COLUMNS, SEVERITIES, type Board, type Factor, type Note } from "@/lib/types";
@@ -31,7 +30,6 @@ export function BoardClient({ id }: { id: string }) {
     );
   }
 
-  const slug = board.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || board.id;
   const exportButton = "rounded border border-zinc-300 px-3 py-1 text-sm dark:border-zinc-600";
   async function copyShareLink(b: Board) {
     try {
@@ -86,17 +84,14 @@ export function BoardClient({ id }: { id: string }) {
           {board.status === "published" && (
             <button onClick={() => set("status", "draft")} className="rounded border px-3 py-1 text-sm dark:border-zinc-600">Reopen as draft</button>
           )}
-          <div className="ml-auto flex flex-wrap gap-2">
-            <button onClick={() => download(`${slug}.md`, "text/markdown", boardToMarkdown(board))} className={exportButton}>Markdown</button>
-            <button onClick={() => download(`${slug}.json`, "application/json", JSON.stringify(board, null, 2))} className={exportButton} title="Full data for backup.">JSON</button>
-            <button onClick={() => download(`${slug}.html`, "text/html", boardReportHtml(board))} className={exportButton} title="Standalone file. Open in a browser or print to PDF.">HTML report</button>
-            <button onClick={() => download(`${slug}-confluence.html`, "text/html", boardStorageHtml(board))} className={exportButton} title="Paste via Insert > Markup in Confluence.">Confluence file</button>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <ExportMenu board={board} />
             <button
               onClick={() => copyShareLink(board)}
               className={`${exportButton} ${shareState === "copied" ? "border-emerald-700 bg-emerald-700 text-white" : shareState === "failed" ? "border-red-600 text-red-600" : ""}`}
-              title="Read-only link. Anyone with it can read the postmortem."
+              title="Create a read-only link. Anyone with it can read the postmortem."
             >
-              {shareState === "copied" ? "Link copied" : shareState === "failed" ? "Copy failed" : "Copy share link"}
+              {shareState === "copied" ? "Link copied" : shareState === "failed" ? "Copy failed" : "Share"}
             </button>
           </div>
         </div>
