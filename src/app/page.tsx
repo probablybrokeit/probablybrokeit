@@ -21,6 +21,7 @@ export default function Home() {
   const [incidentId, setIncidentId] = useState("");
   const [importing, setImporting] = useState(false);
   const [incidentMessage, setIncidentMessage] = useState("");
+  const [importMode, setImportMode] = useState<"file" | "provider">("file");
 
   async function importIncident(e: React.FormEvent) {
     e.preventDefault();
@@ -111,76 +112,99 @@ export default function Home() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-semibold">Start a postmortem</h2>
-        <div className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
-          <form onSubmit={create} className="space-y-2 p-4">
-            <p className="text-sm font-medium">New</p>
+        <h2 className="font-semibold">New postmortem</h2>
+        <form onSubmit={create} className="space-y-2 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. Checkout outage, 2026-11-10"
+            aria-label="Title"
+            className="w-full rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
+          />
+          <div className="flex flex-wrap gap-2">
+            <select value={severity} onChange={(e) => setSeverity(e.target.value as Severity)} aria-label="Severity" className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
+              {SEVERITIES.map((s) => <option key={s}>{s}</option>)}
+            </select>
             <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Checkout outage, 2026-11-10"
-              aria-label="Title"
-              className="w-full rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
+              type="datetime-local"
+              value={incidentStart}
+              onChange={(e) => setIncidentStart(e.target.value)}
+              aria-label="Incident start"
+              className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
             />
-            <div className="flex flex-wrap gap-2">
-              <select value={severity} onChange={(e) => setSeverity(e.target.value as Severity)} aria-label="Severity" className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
-                {SEVERITIES.map((s) => <option key={s}>{s}</option>)}
-              </select>
-              <input
-                type="datetime-local"
-                value={incidentStart}
-                onChange={(e) => setIncidentStart(e.target.value)}
-                aria-label="Incident start"
-                className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
-              />
-              <button type="submit" className="ml-auto rounded bg-zinc-900 px-4 py-1 text-white dark:bg-zinc-100 dark:text-zinc-900">Create</button>
-            </div>
-          </form>
+            <button type="submit" className="ml-auto rounded bg-zinc-900 px-4 py-1 text-white dark:bg-zinc-100 dark:text-zinc-900">Create</button>
+          </div>
+        </form>
+      </section>
 
-          <div className="flex flex-wrap items-center gap-3 p-4 text-sm">
-            <p className="font-medium">From a file</p>
-            <label className="cursor-pointer rounded border border-zinc-300 px-3 py-1 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800">
-              Import postmortem
-              <input
-                type="file"
-                accept="application/json,.json"
-                multiple
-                className="hidden"
-                onChange={(e) => {
-                  importFiles(e.target.files);
-                  e.target.value = "";
-                }}
-              />
-            </label>
-            <span className="text-xs text-zinc-500">.json files exported from this app</span>
-            {message && <span className="text-zinc-600 dark:text-zinc-300">{message}</span>}
+      <section className="space-y-3">
+        <h2 className="font-semibold">Import</h2>
+        <div className="space-y-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+          <div role="tablist" className="flex gap-2 text-sm">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={importMode === "file"}
+              onClick={() => setImportMode("file")}
+              className={`rounded border px-3 py-1 text-sm ${importMode === "file" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "border-zinc-300 dark:border-zinc-600"}`}
+            >
+              From a file
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={importMode === "provider"}
+              onClick={() => setImportMode("provider")}
+              className={`rounded border px-3 py-1 text-sm ${importMode === "provider" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "border-zinc-300 dark:border-zinc-600"}`}
+            >
+              From a provider incident
+            </button>
           </div>
 
-          <form onSubmit={importIncident} className="space-y-2 p-4">
-            <p className="text-sm font-medium">From a provider incident</p>
-            <p className="text-xs text-zinc-500">
-              Draft with the provider&apos;s timeline. Only recent incidents are available.{" "}
-              <a href={SOURCES.find((s) => s.id === sourceId)?.page} target="_blank" rel="noopener noreferrer" className="underline">
-                Find IDs on {SOURCES.find((s) => s.id === sourceId)?.label}
-              </a>
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <select value={sourceId} onChange={(e) => setSourceId(e.target.value as SourceId)} aria-label="Provider" className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
-                {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-              </select>
-              <input
-                value={incidentId}
-                onChange={(e) => setIncidentId(e.target.value)}
-                placeholder="Incident ID"
-                aria-label="Incident ID"
-                className="min-w-40 flex-1 rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
-              />
-              <button type="submit" disabled={importing} className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-60 dark:border-zinc-600">
-                {importing ? "Importing…" : "Import incident"}
-              </button>
+          {importMode === "file" ? (
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <label className="cursor-pointer rounded border border-zinc-300 px-3 py-1 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800">
+                Choose .json files
+                <input
+                  type="file"
+                  accept="application/json,.json"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    importFiles(e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              <span className="text-xs text-zinc-500">Files exported from this app</span>
+              {message && <span className="text-zinc-600 dark:text-zinc-300">{message}</span>}
             </div>
-            {incidentMessage && <p className="text-sm text-red-600">{incidentMessage}</p>}
-          </form>
+          ) : (
+            <form onSubmit={importIncident} className="space-y-2">
+              <p className="text-xs text-zinc-500">
+                Draft with the provider&apos;s timeline. Only recent incidents are available.{" "}
+                <a href={SOURCES.find((s) => s.id === sourceId)?.page} target="_blank" rel="noopener noreferrer" className="underline">
+                  Find IDs on {SOURCES.find((s) => s.id === sourceId)?.label}
+                </a>
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <select value={sourceId} onChange={(e) => setSourceId(e.target.value as SourceId)} aria-label="Provider" className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
+                  {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                </select>
+                <input
+                  value={incidentId}
+                  onChange={(e) => setIncidentId(e.target.value)}
+                  placeholder="Incident ID"
+                  aria-label="Incident ID"
+                  className="min-w-40 flex-1 rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
+                />
+                <button type="submit" disabled={importing} className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-60 dark:border-zinc-600">
+                  {importing ? "Importing…" : "Import incident"}
+                </button>
+              </div>
+              {incidentMessage && <p className="text-sm text-red-600">{incidentMessage}</p>}
+            </form>
+          )}
         </div>
       </section>
 
