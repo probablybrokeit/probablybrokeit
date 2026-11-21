@@ -110,73 +110,79 @@ export default function Home() {
         </div>
       </section>
 
-      <form onSubmit={create} className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
-        <h2 className="font-semibold">New postmortem</h2>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g. Checkout outage, 2026-11-10"
-          className="w-full rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
-        />
-        <div className="flex flex-wrap gap-2">
-          <select value={severity} onChange={(e) => setSeverity(e.target.value as Severity)} className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
-            {SEVERITIES.map((s) => <option key={s}>{s}</option>)}
-          </select>
-          <input
-            type="datetime-local"
-            value={incidentStart}
-            onChange={(e) => setIncidentStart(e.target.value)}
-            aria-label="Incident start"
-            className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
-          />
-          <button type="submit" className="ml-auto rounded bg-zinc-900 px-4 py-1 text-white dark:bg-zinc-100 dark:text-zinc-900">Create</button>
-        </div>
-      </form>
+      <section className="space-y-3">
+        <h2 className="font-semibold">Start a postmortem</h2>
+        <div className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
+          <form onSubmit={create} className="space-y-2 p-4">
+            <p className="text-sm font-medium">New</p>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Checkout outage, 2026-11-10"
+              aria-label="Title"
+              className="w-full rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
+            />
+            <div className="flex flex-wrap gap-2">
+              <select value={severity} onChange={(e) => setSeverity(e.target.value as Severity)} aria-label="Severity" className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
+                {SEVERITIES.map((s) => <option key={s}>{s}</option>)}
+              </select>
+              <input
+                type="datetime-local"
+                value={incidentStart}
+                onChange={(e) => setIncidentStart(e.target.value)}
+                aria-label="Incident start"
+                className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
+              />
+              <button type="submit" className="ml-auto rounded bg-zinc-900 px-4 py-1 text-white dark:bg-zinc-100 dark:text-zinc-900">Create</button>
+            </div>
+          </form>
 
-      <div className="flex flex-wrap items-center gap-3 text-sm">
-        <label className="cursor-pointer rounded border border-zinc-300 px-3 py-1 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800">
-          Import postmortem
-          <input
-            type="file"
-            accept="application/json,.json"
-            multiple
-            className="hidden"
-            onChange={(e) => {
-              importFiles(e.target.files);
-              e.target.value = "";
-            }}
-          />
-        </label>
-        <span className="text-xs text-zinc-500">Accepts .json files exported from this app.</span>
-        {message && <span className="text-zinc-600 dark:text-zinc-300">{message}</span>}
-      </div>
+          <div className="flex flex-wrap items-center gap-3 p-4 text-sm">
+            <p className="font-medium">From a file</p>
+            <label className="cursor-pointer rounded border border-zinc-300 px-3 py-1 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800">
+              Import postmortem
+              <input
+                type="file"
+                accept="application/json,.json"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  importFiles(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            <span className="text-xs text-zinc-500">.json files exported from this app</span>
+            {message && <span className="text-zinc-600 dark:text-zinc-300">{message}</span>}
+          </div>
 
-      <form onSubmit={importIncident} className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
-        <h2 className="font-semibold">Start from a provider incident</h2>
-        <p className="text-xs text-zinc-500">
-          Enter an incident ID from the provider&apos;s status page. You get a draft with their timeline, and you add your own analysis.
-          Only the most recent incidents are available.{" "}
-          <a href={SOURCES.find((s) => s.id === sourceId)?.page} target="_blank" rel="noopener noreferrer" className="underline">
-            Find IDs on {SOURCES.find((s) => s.id === sourceId)?.label}
-          </a>
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <select value={sourceId} onChange={(e) => setSourceId(e.target.value as SourceId)} className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
-            {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-          </select>
-          <input
-            value={incidentId}
-            onChange={(e) => setIncidentId(e.target.value)}
-            placeholder="Incident ID"
-            aria-label="Incident ID"
-            className="min-w-40 flex-1 rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
-          />
-          <button type="submit" disabled={importing} className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-60 dark:border-zinc-600">
-            {importing ? "Importing…" : "Import incident"}
-          </button>
+          <form onSubmit={importIncident} className="space-y-2 p-4">
+            <p className="text-sm font-medium">From a provider incident</p>
+            <p className="text-xs text-zinc-500">
+              Draft with the provider&apos;s timeline. Only recent incidents are available.{" "}
+              <a href={SOURCES.find((s) => s.id === sourceId)?.page} target="_blank" rel="noopener noreferrer" className="underline">
+                Find IDs on {SOURCES.find((s) => s.id === sourceId)?.label}
+              </a>
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <select value={sourceId} onChange={(e) => setSourceId(e.target.value as SourceId)} aria-label="Provider" className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
+                {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+              </select>
+              <input
+                value={incidentId}
+                onChange={(e) => setIncidentId(e.target.value)}
+                placeholder="Incident ID"
+                aria-label="Incident ID"
+                className="min-w-40 flex-1 rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
+              />
+              <button type="submit" disabled={importing} className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-60 dark:border-zinc-600">
+                {importing ? "Importing…" : "Import incident"}
+              </button>
+            </div>
+            {incidentMessage && <p className="text-sm text-red-600">{incidentMessage}</p>}
+          </form>
         </div>
-        {incidentMessage && <p className="text-sm text-red-600">{incidentMessage}</p>}
-      </form>
+      </section>
 
       <ul className="divide-y divide-zinc-200 dark:divide-zinc-700">
         {sorted?.length === 0 && <li className="py-4 text-sm text-zinc-500">No postmortems yet.</li>}
