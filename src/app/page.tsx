@@ -2,19 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
-import { ProviderImport } from "@/components/ProviderImport";
+import { useState } from "react";
 import { newBoard } from "@/lib/board";
 import { parseBoard, uniqueTitle } from "@/lib/import";
-import { SOURCES } from "@/lib/status-sources";
+import { draftFromIncident, SOURCES, type SourceId } from "@/lib/status-sources";
 import { deleteBoard, saveBoard } from "@/lib/storage";
 import { useBoards } from "@/lib/useBoard";
 import { SEVERITIES, type Severity } from "@/lib/types";
-
-function subscribeSearch(callback: () => void) {
-  window.addEventListener("popstate", callback);
-  return () => window.removeEventListener("popstate", callback);
-}
 
 export default function Home() {
   const router = useRouter();
@@ -23,15 +17,34 @@ export default function Home() {
   const [severity, setSeverity] = useState<Severity>("SEV2");
   const [incidentStart, setIncidentStart] = useState("");
   const [message, setMessage] = useState("");
-  const [importMode, setImportMode] = useState<"file" | "provider" | null>(null);
+  const [sourceId, setSourceId] = useState<SourceId>("github");
+  const [incidentId, setIncidentId] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [incidentMessage, setIncidentMessage] = useState("");
+  const [importMode, setImportMode] = useState<"file" | "provider">("file");
 
-  // Links like /?source=gcp&id=... open with the provider form filled in.
-  const search = useSyncExternalStore(subscribeSearch, () => window.location.search, () => "");
-  const params = new URLSearchParams(search);
-  const linkSource = SOURCES.find((s) => s.id === params.get("source"))?.id;
-  const linkId = params.get("id")?.trim() ?? "";
-  const fromLink = !!linkSource && linkId !== "";
-  const mode = importMode ?? (fromLink ? "provider" : "file");
+  async function importIncident(e: React.FormEvent) {
+    e.preventDefault();
+    const id = incidentId.trim();
+    if (!id) return;
+    setImporting(true);
+    setIncidentMessage("");
+    try {
+      const res = await fetch(`/api/incident?source=${sourceId}&id=${encodeURIComponent(id)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setIncidentMessage(data.error ?? "Import failed.");
+        return;
+      }
+      const board = draftFromIncident(data);
+      saveBoard(board);
+      router.push(`/board/${board.id}`);
+    } catch {
+      setIncidentMessage("Import failed. Check your connection and try again.");
+    } finally {
+      setImporting(false);
+    }
+  }
 
   function create(e: React.FormEvent) {
     e.preventDefault();
@@ -131,24 +144,24 @@ export default function Home() {
             <button
               type="button"
               role="tab"
-              aria-selected={mode === "file"}
+              aria-selected={importMode === "file"}
               onClick={() => setImportMode("file")}
-              className={`rounded border px-3 py-1 text-sm ${mode === "file" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "border-zinc-300 dark:border-zinc-600"}`}
+              className={`rounded border px-3 py-1 text-sm ${importMode === "file" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "border-zinc-300 dark:border-zinc-600"}`}
             >
               From a file
             </button>
             <button
               type="button"
               role="tab"
-              aria-selected={mode === "provider"}
+              aria-selected={importMode === "provider"}
               onClick={() => setImportMode("provider")}
-              className={`rounded border px-3 py-1 text-sm ${mode === "provider" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "border-zinc-300 dark:border-zinc-600"}`}
+              className={`rounded border px-3 py-1 text-sm ${importMode === "provider" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "border-zinc-300 dark:border-zinc-600"}`}
             >
               From a provider incident
             </button>
           </div>
 
-          {mode === "file" ? (
+          {importMode === "file" ? (
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <label className="cursor-pointer rounded border border-zinc-300 px-3 py-1 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800">
                 Choose .json files
@@ -167,7 +180,30 @@ export default function Home() {
               {message && <span className="text-zinc-600 dark:text-zinc-300">{message}</span>}
             </div>
           ) : (
-            <ProviderImport key={search} initialSource={linkSource ?? "github"} initialId={linkId} fromLink={fromLink} />
+            <form onSubmit={importIncident} className="space-y-2">
+              <p className="text-xs text-zinc-500">
+                Draft with the provider&apos;s timeline. Only recent incidents are available.{" "}
+                <a href={SOURCES.find((s) => s.id === sourceId)?.page} target="_blank" rel="noopener noreferrer" className="underline">
+                  Find IDs on {SOURCES.find((s) => s.id === sourceId)?.label}
+                </a>
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <select value={sourceId} onChange={(e) => setSourceId(e.target.value as SourceId)} aria-label="Provider" className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
+                  {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                </select>
+                <input
+                  value={incidentId}
+                  onChange={(e) => setIncidentId(e.target.value)}
+                  placeholder="Incident ID"
+                  aria-label="Incident ID"
+                  className="min-w-40 flex-1 rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
+                />
+                <button type="submit" disabled={importing} className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-60 dark:border-zinc-600">
+                  {importing ? "Importing…" : "Import incident"}
+                </button>
+              </div>
+              {incidentMessage && <p className="text-sm text-red-600">{incidentMessage}</p>}
+            </form>
           )}
         </div>
       </section>
