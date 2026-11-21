@@ -101,12 +101,13 @@ export function draftFromIncident(inc: ImportedIncident): Board {
     text: t.text,
     votes: 0,
     time: toUtcLabel(t.time),
+    source: "provider",
     createdAt: now,
   }));
   return {
     ...board,
     incidentEnd: toLocalInput(inc.incidentEnd),
-    summary: `Imported from ${inc.sourceUrl}. The provider rated the impact "${inc.providerImpact}". Describe how it affected your systems and what you did about it.`,
+    summary: `Imported from ${inc.sourceUrl}. Provider impact: "${inc.providerImpact}". Impact on our systems: to be written.`,
     notes: timeline,
   };
 }
