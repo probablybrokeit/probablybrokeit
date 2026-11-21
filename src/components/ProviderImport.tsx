@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { draftFromIncident, SOURCES, type SourceId } from "@/lib/status-sources";
+import { draftFromIncident, parseIncidentPageUrl, SOURCES, type SourceId } from "@/lib/status-sources";
 import { saveBoard } from "@/lib/storage";
 
 type Props = { initialSource: SourceId; initialId: string; fromLink: boolean };
@@ -16,6 +16,7 @@ export function ProviderImport({ initialSource, initialId, fromLink }: Props) {
   const [incidentId, setIncidentId] = useState(initialId);
   const [importing, setImporting] = useState(false);
   const [message, setMessage] = useState("");
+  const [pasted, setPasted] = useState("");
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
   const source = SOURCES.find((s) => s.id === sourceId);
 
@@ -39,6 +40,17 @@ export function ProviderImport({ initialSource, initialId, fromLink }: Props) {
       setMessage("Import failed. Check your connection and try again.");
     } finally {
       setImporting(false);
+    }
+  }
+
+  /** Pasting a provider's incident page address fills in the provider and ID. */
+  function onPaste(value: string) {
+    setPasted(value);
+    const parsed = parseIncidentPageUrl(value);
+    if (parsed) {
+      setSourceId(parsed.source);
+      setIncidentId(parsed.id);
+      setMessage("");
     }
   }
 
@@ -68,6 +80,13 @@ export function ProviderImport({ initialSource, initialId, fromLink }: Props) {
           </a>
         )}
       </p>
+      <input
+        value={pasted}
+        onChange={(e) => onPaste(e.target.value)}
+        placeholder="Or paste an incident page link from the provider"
+        aria-label="Incident page link"
+        className="w-full rounded border border-zinc-300 bg-transparent px-2 py-1 text-sm dark:border-zinc-600"
+      />
       <div className="flex flex-wrap gap-2">
         <select value={sourceId} onChange={(e) => setSourceId(e.target.value as SourceId)} aria-label="Provider" className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
           {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}

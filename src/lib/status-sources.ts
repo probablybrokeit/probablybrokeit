@@ -108,3 +108,18 @@ export function draftFromIncident(inc: ImportedIncident): Board {
     providerUpdates: inc.timeline.map((t) => ({ id: newId(), time: toUtcLabel(t.time), status: t.status, text: t.text })),
   };
 }
+
+const INCIDENT_PAGE = [
+  { source: "github", pattern: /^https?:\/\/(?:www\.)?githubstatus\.com\/incidents\/([A-Za-z0-9_-]{1,64})/i },
+  { source: "gcp", pattern: /^https?:\/\/status\.cloud\.google\.com\/incidents\/([A-Za-z0-9_-]{1,64})/i },
+] as const;
+
+/** Reads the provider and ID from a pasted incident page address, or returns null. */
+export function parseIncidentPageUrl(text: string): { source: SourceId; id: string } | null {
+  const trimmed = text.trim();
+  for (const { source, pattern } of INCIDENT_PAGE) {
+    const match = trimmed.match(pattern);
+    if (match) return { source: source as SourceId, id: match[1] };
+  }
+  return null;
+}
