@@ -153,7 +153,13 @@ export default function Home() {
 
       <form onSubmit={importIncident} className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
         <h2 className="font-semibold">Start from a provider incident</h2>
-        <p className="text-xs text-zinc-500">Enter a recent incident ID from the provider&apos;s status page. You get a draft with their timeline, and you add your own analysis.</p>
+        <p className="text-xs text-zinc-500">
+          Enter an incident ID from the provider&apos;s status page. You get a draft with their timeline, and you add your own analysis.
+          Only the most recent incidents are available.{" "}
+          <a href={SOURCES.find((s) => s.id === sourceId)?.page} target="_blank" rel="noopener noreferrer" className="underline">
+            Find IDs on {SOURCES.find((s) => s.id === sourceId)?.label}
+          </a>
+        </p>
         <div className="flex flex-wrap gap-2">
           <select value={sourceId} onChange={(e) => setSourceId(e.target.value as SourceId)} className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
             {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}

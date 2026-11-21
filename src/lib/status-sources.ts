@@ -5,8 +5,8 @@ import type { Board, Note } from "./types";
 // Public status feeds. The server route fetches these fixed URLs only.
 // The user supplies just an incident ID, which is matched inside the list.
 export const SOURCES = [
-  { id: "github", label: "GitHub Status", url: "https://www.githubstatus.com/api/v2/incidents.json" },
-  { id: "gcp", label: "Google Cloud", url: "https://status.cloud.google.com/incidents.json" },
+  { id: "github", label: "GitHub Status", url: "https://www.githubstatus.com/api/v2/incidents.json", page: "https://www.githubstatus.com/history" },
+  { id: "gcp", label: "Google Cloud", url: "https://status.cloud.google.com/incidents.json", page: "https://status.cloud.google.com/" },
 ] as const;
 
 export type SourceId = (typeof SOURCES)[number]["id"];
