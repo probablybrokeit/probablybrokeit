@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ActionItems } from "@/components/ActionItems";
+import { ProviderUpdates } from "@/components/ProviderUpdates";
 import { NoteColumn } from "@/components/NoteColumn";
 import { formatMinutes, metrics } from "@/lib/board";
 import { blamelessWarnings } from "@/lib/checks";
@@ -157,6 +158,11 @@ export function BoardClient({ id }: { id: string }) {
             <textarea rows={4} className={input} value={board.impact} placeholder="Users, revenue, teams. Quantify where you can." onChange={(e) => set("impact", e.target.value)} />
           </label>
         </section>
+
+        {/* Provider's own updates, kept apart from the team's timeline */}
+        {board.providerUpdates && board.providerUpdates.length > 0 && (
+          <ProviderUpdates updates={board.providerUpdates} onClear={() => set("providerUpdates", [])} />
+        )}
 
         {/* Contributing factors instead of a single root cause */}
         <section className="space-y-3">

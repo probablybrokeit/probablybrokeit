@@ -21,8 +21,6 @@ export type Note = {
   votes: number;
   /** Timeline notes only: time of the event, free text such as "14:05 UTC". */
   time?: string;
-  /** Set on notes copied from a provider's status page. Not checked for blameless wording. */
-  source?: "provider";
   createdAt: number;
 };
 
@@ -54,6 +52,14 @@ export type ActionItem = {
   createdAt: number;
 };
 
+/** One update from a provider's status page. Kept apart from the team's own timeline. */
+export type ProviderUpdate = {
+  id: string;
+  time: string;
+  status: string;
+  text: string;
+};
+
 export type Board = {
   id: string;
   title: string;
@@ -72,6 +78,8 @@ export type Board = {
   summary: string;
   factors: Factor[];
   notes: Note[];
+  /** Provider's own status updates, shown in a separate section. Optional for older postmortems. */
+  providerUpdates?: ProviderUpdate[];
   actions: ActionItem[];
   createdAt: number;
   updatedAt: number;

@@ -1,6 +1,6 @@
 import { newBoard } from "./board";
 import { newId } from "./storage";
-import type { Board, Note } from "./types";
+import type { Board } from "./types";
 
 // Public status feeds. The server route fetches these fixed URLs only.
 // The user supplies just an incident ID, which is matched inside the list.
@@ -17,7 +17,7 @@ export type ImportedIncident = {
   incidentEnd: string;
   sourceUrl: string;
   providerImpact: string;
-  timeline: { time: string; text: string }[];
+  timeline: { time: string; status: string; text: string }[];
 };
 
 type GhUpdate = { body: string; created_at: string; status: string };
@@ -56,7 +56,7 @@ export function fromGithub(list: unknown, id: string): ImportedIncident | null {
     providerImpact: inc.impact,
     timeline: [...inc.incident_updates]
       .sort((a, b) => a.created_at.localeCompare(b.created_at))
-      .map((u) => ({ time: u.created_at, text: `${u.status}: ${u.body}` })),
+      .map((u) => ({ time: u.created_at, status: u.status, text: u.body })),
   };
 }
 
@@ -72,7 +72,7 @@ export function fromGcp(list: unknown, id: string): ImportedIncident | null {
     providerImpact: inc.status_impact,
     timeline: [...inc.updates]
       .sort((a, b) => a.when.localeCompare(b.when))
-      .map((u) => ({ time: u.when, text: u.text })),
+      .map((u) => ({ time: u.when, status: u.status, text: u.text })),
   };
 }
 
@@ -91,23 +91,20 @@ function toUtcLabel(iso: string): string {
   return `${d.toISOString().slice(0, 16).replace("T", " ")} UTC`;
 }
 
+/** One-line summary of a provider update: its first sentence, capped in length. */
+export function summarizeUpdate(text: string): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  const first = clean.split(/(?<=[.!?])\s/)[0] ?? clean;
+  return first.length > 220 ? `${first.slice(0, 217)}…` : first;
+}
+
 /** A new draft postmortem prefilled from a provider incident. The user writes the analysis. */
 export function draftFromIncident(inc: ImportedIncident): Board {
   const board = newBoard(inc.title, "SEV2", toLocalInput(inc.incidentStart));
-  const now = Date.now();
-  const timeline: Note[] = inc.timeline.map((t) => ({
-    id: newId(),
-    column: "timeline",
-    text: t.text,
-    votes: 0,
-    time: toUtcLabel(t.time),
-    source: "provider",
-    createdAt: now,
-  }));
   return {
     ...board,
     incidentEnd: toLocalInput(inc.incidentEnd),
     summary: `Imported from ${inc.sourceUrl}. Provider impact: "${inc.providerImpact}". Impact on our systems: to be written.`,
-    notes: timeline,
+    providerUpdates: inc.timeline.map((t) => ({ id: newId(), time: toUtcLabel(t.time), status: t.status, text: t.text })),
   };
 }

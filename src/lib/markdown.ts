@@ -39,6 +39,12 @@ export function boardToMarkdown(b: Board): string {
     lines.push("");
   }
 
+  if (b.providerUpdates && b.providerUpdates.length > 0) {
+    lines.push("## Provider updates", "", "_Written by the provider, not by the team._", "");
+    for (const u of b.providerUpdates) lines.push(`- **${u.time}**${u.status ? ` (${u.status.replace(/_/g, " ")})` : ""} ${u.text}`);
+    lines.push("");
+  }
+
   lines.push("## Action items", "");
   if (b.actions.length === 0) lines.push("_None_");
   for (const a of b.actions) {
