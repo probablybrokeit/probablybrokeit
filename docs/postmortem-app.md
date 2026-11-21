@@ -22,3 +22,12 @@ Boards are stored in the browser's `localStorage` (key `postmortem-boards-v2`). 
 
 - `src/lib/checks.ts`: publish requirements and blameless-wording rules.
 - `src/lib/board.ts`: time metrics and the new-board default.
+
+## Planned: provider incident import
+
+Supported now: **GitHub Status** and **Google Cloud**. Enter an incident ID on the home page to get a draft with the provider's timeline. The route fetches only the two fixed public feeds in `src/lib/status-sources.ts`.
+
+Planned later:
+- **AWS.** Public data is RSS per service, so it needs a parser. Deferred for now.
+- **Azure.** The history page has Post Incident Reviews but no feed or API. Manual paste is more practical than scraping.
+- **More Statuspage vendors** (Cloudflare, OpenAI, DigitalOcean, Heroku, Twilio). These share GitHub's format, so each is a single entry in `SOURCES`.

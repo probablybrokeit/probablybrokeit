@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { newBoard } from "@/lib/board";
 import { parseBoard, uniqueTitle } from "@/lib/import";
+import { draftFromIncident, SOURCES, type SourceId } from "@/lib/status-sources";
 import { deleteBoard, saveBoard } from "@/lib/storage";
 import { useBoards } from "@/lib/useBoard";
 import { SEVERITIES, type Severity } from "@/lib/types";
@@ -16,6 +17,33 @@ export default function Home() {
   const [severity, setSeverity] = useState<Severity>("SEV2");
   const [incidentStart, setIncidentStart] = useState("");
   const [message, setMessage] = useState("");
+  const [sourceId, setSourceId] = useState<SourceId>("github");
+  const [incidentId, setIncidentId] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [incidentMessage, setIncidentMessage] = useState("");
+
+  async function importIncident(e: React.FormEvent) {
+    e.preventDefault();
+    const id = incidentId.trim();
+    if (!id) return;
+    setImporting(true);
+    setIncidentMessage("");
+    try {
+      const res = await fetch(`/api/incident?source=${sourceId}&id=${encodeURIComponent(id)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setIncidentMessage(data.error ?? "Import failed.");
+        return;
+      }
+      const board = draftFromIncident(data);
+      saveBoard(board);
+      router.push(`/board/${board.id}`);
+    } catch {
+      setIncidentMessage("Import failed. Check your connection and try again.");
+    } finally {
+      setImporting(false);
+    }
+  }
 
   function create(e: React.FormEvent) {
     e.preventDefault();
@@ -122,6 +150,27 @@ export default function Home() {
         <span className="text-xs text-zinc-500">Accepts .json files exported from this app.</span>
         {message && <span className="text-zinc-600 dark:text-zinc-300">{message}</span>}
       </div>
+
+      <form onSubmit={importIncident} className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+        <h2 className="font-semibold">Start from a provider incident</h2>
+        <p className="text-xs text-zinc-500">Enter a recent incident ID from the provider&apos;s status page. You get a draft with their timeline, and you add your own analysis.</p>
+        <div className="flex flex-wrap gap-2">
+          <select value={sourceId} onChange={(e) => setSourceId(e.target.value as SourceId)} className="rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600">
+            {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+          </select>
+          <input
+            value={incidentId}
+            onChange={(e) => setIncidentId(e.target.value)}
+            placeholder="Incident ID"
+            aria-label="Incident ID"
+            className="min-w-40 flex-1 rounded border border-zinc-300 bg-transparent px-2 py-1 dark:border-zinc-600"
+          />
+          <button type="submit" disabled={importing} className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-60 dark:border-zinc-600">
+            {importing ? "Importing…" : "Import incident"}
+          </button>
+        </div>
+        {incidentMessage && <p className="text-sm text-red-600">{incidentMessage}</p>}
+      </form>
 
       <ul className="divide-y divide-zinc-200 dark:divide-zinc-700">
         {sorted?.length === 0 && <li className="py-4 text-sm text-zinc-500">No postmortems yet.</li>}
