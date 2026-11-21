@@ -16,7 +16,7 @@ export function blamelessWarnings(b: Board): BlamelessWarning[] {
     { where: "Summary", text: b.summary },
     { where: "Impact", text: b.impact },
     ...b.factors.map((f) => ({ where: "Contributing factor", text: f.text })),
-    ...b.notes.filter((n) => n.source !== "provider").map((n) => ({ where: "Note", text: n.text })),
+    ...b.notes.map((n) => ({ where: "Note", text: n.text })),
     ...b.actions.flatMap((a) => [
       { where: "Action item", text: a.text },
       { where: "Action end state", text: a.endState },

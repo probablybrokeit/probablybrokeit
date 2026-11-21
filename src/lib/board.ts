@@ -19,6 +19,7 @@ export function newBoard(title: string, severity: Severity, incidentStart: strin
     summary: "",
     factors: [],
     notes: [],
+    providerUpdates: [],
     actions: [],
     createdAt: now,
     updatedAt: now,

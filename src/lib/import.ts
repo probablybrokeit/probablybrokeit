@@ -1,5 +1,5 @@
 import { newId } from "./storage";
-import { SEVERITIES, type ActionItem, type Board, type Factor, type Note } from "./types";
+import { SEVERITIES, type ActionItem, type Board, type Factor, type Note, type ProviderUpdate } from "./types";
 
 const str = (v: unknown) => (typeof v === "string" ? v : "");
 const bool = (v: unknown) => v === true;
@@ -46,6 +46,10 @@ export function parseBoard(raw: unknown): Board | null {
     createdAt: now,
   }));
 
+  const providerUpdates: ProviderUpdate[] = Array.isArray(raw.providerUpdates)
+    ? raw.providerUpdates.filter(isObj).map((u) => ({ id: newId(), time: str(u.time), status: str(u.status), text: str(u.text) }))
+    : [];
+
   return {
     id: newId(),
     title,
@@ -62,6 +66,7 @@ export function parseBoard(raw: unknown): Board | null {
     summary: str(raw.summary),
     factors,
     notes,
+    providerUpdates,
     actions,
     createdAt: now,
     updatedAt: now,

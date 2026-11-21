@@ -60,6 +60,15 @@ export function boardBodyHtml(b: Board): string {
     );
   }
 
+  if (b.providerUpdates && b.providerUpdates.length > 0) {
+    out.push("<h2>Provider updates</h2>", "<p><em>Written by the provider, not by the team.</em></p>");
+    out.push(
+      `<ul>${b.providerUpdates
+        .map((u) => `<li><strong>${esc(u.time)}</strong>${u.status ? ` (${esc(u.status.replace(/_/g, " "))})` : ""} ${multi(u.text)}</li>`)
+        .join("")}</ul>`,
+    );
+  }
+
   out.push("<h2>Action items</h2>");
   if (b.actions.length === 0) {
     out.push(NONE);
