@@ -21,6 +21,8 @@ export type Note = {
   votes: number;
   /** Timeline notes only: time of the event, free text such as "14:05 UTC". */
   time?: string;
+  /** Set on notes copied from a provider's status page. Not checked for blameless wording. */
+  source?: "provider";
   createdAt: number;
 };
 
